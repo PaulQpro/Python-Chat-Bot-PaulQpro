@@ -39,7 +39,7 @@ def bot(UsrIn):
         UsrIn = UsrIn.replace(word,suggestion)
     UsrIn = filter(UsrIn)
     intent = ans(UsrIn)
-    print(intent,UsrIn)
+#     print(intent,UsrIn)
 #     if not intent:
 #         trans_text = Vect.transform([UsrIn])
 #         print(trans_text)
@@ -50,13 +50,22 @@ def bot(UsrIn):
         return(rnd.choice(Phrases[intent]["reactions"]),True)
     if intent:
         return(rnd.choice(Phrases[intent]["reactions"]),False)
-    return ("Не понял",False)
+    r = rnd.random()
+    if r < .9:
+        return ("Не понял",False)
+    else: 
+        w = []
+        for index in Phrases:
+            w.append(index)
+        return (rnd.choice(Phrases[rnd.choice(w)]["reactions"]),False)
 
 # --- Input Обработка --- #
 def ans(UsrIn):
     for index in Phrases:
         for word in Phrases[index]["words"]:
-            if
+            if look_like(UsrIn, word) == True:
+                return index
+    return False
 # x=[];y=[]
 # for index,data in Phrases.items():
 #     for words in data["words"]:
@@ -67,6 +76,7 @@ def ans(UsrIn):
 # LogReg.fit(vectX,y)
 # RndForClass.fit(vectX,y)
 # --- Код --- #
+print("Hello, User!")
 on = True
 while on:
     usrIn = input('>').lower()
