@@ -16,20 +16,13 @@ splr = speller()
 # --- Шестнадцатеричная цифра из дес. числа --- #
 def Hex(num):
     match str(num):
-        case "10":
-            num = "A"
-        case "11":
-            num = "B"
-        case "12":
-            num = "C"
-        case "13":
-            num = "D"
-        case "14":
-            num = "E"
-        case "15":
-            num = "F"
-        case _:
-            num = str(num)
+        case "10": num = "A"
+        case "11": num = "B"
+        case "12": num = "C"
+        case "13": num = "D"
+        case "14": num = "E"
+        case "15": num = "F"
+        case _: num = str(num)
     return num
 
 # --- Использование NLTK для коррекции ввода --- #
@@ -42,7 +35,7 @@ def look_like(usr_in, example):
     else:
         return False
 
-# --- Фильтр символов (выкл.) --- #
+# --- Фильтр символов (вкл.) --- #
 def filter(usr):
     aphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя -+=1234567890"
     res = []
@@ -54,16 +47,19 @@ def filter(usr):
 # --- [Bot]: --- #
 def bot(UsrIn):
     intent = ans(UsrIn,False)
+    #Обработка комманд
     if intent == "c1":# c1 - преобразование в двоичную
-        num = int(UsrIn[2:-1])
+        num = int(math.fabs(int(UsrIn[2:-1])))
         result = "b"
         while True:
             if num < 2: result = result[:1]+str(num)+result[1:];break
             result = result[:1]+str(num%2)+result[1:]
             num = math.floor(num / 2)
+        if int(UsrIn[2:-1]) < 0:
+            result = "-("+result+")"
         return (result,False)
     if intent == "c2":# c2 - преобразование в шестнадцатеричную
-        num = int(UsrIn[2:-1])
+        num = int(math.fabs(int(UsrIn[2:-1])))
         result = "0x"
         while True:
             if num < 16: 
@@ -74,6 +70,8 @@ def bot(UsrIn):
             preres = Hex(preres)
             result = result[:2]+preres+result[2:]
             num = math.ceil(num / 16)
+        if int(UsrIn[2:-1]) < 0:
+            result = "-("+result+")"
         return (result,False)
     if intent == "c3":# c3 - преобразование из дв. в десятичную
         bnum = UsrIn[2:-1]
@@ -107,6 +105,8 @@ def bot(UsrIn):
         for i in range(0,len(num)):
             result = result + num[i]*16**i
         return (result,False)
+    # Обработка ввода
+    
     changes = {change['word']:change['s'][0] for change in splr.spell(UsrIn)}
     for word, suggestion in changes.items():
         UsrIn = UsrIn.replace(word,suggestion)
@@ -114,10 +114,10 @@ def bot(UsrIn):
     intent = ans(UsrIn,True)
 #     print(intent,UsrIn)
 #     if not intent:
-#         trans_text = Vect.transform([UsrIn])
-#         print(trans_text)
-# #         intent = LogReg.predict(trans_text)[0]
-#         intent = RndForClass.predict(trans_text)[0]
+#         vect_text = Vect.transform([UsrIn])
+#         print(vect_text)
+# #         intent = LogReg.predict(vect_text)[0]
+#         intent = RndForClass.predict(vect_text)[0]
 #         print(intent)
     if intent == "bye":
         return(rnd.choice(Phrases[intent]["reactions"]),True)
@@ -133,8 +133,9 @@ def bot(UsrIn):
 
 # c1 - преобразование в двоичную
 # c2 - преобразование в шестнадцатеричную
-# c3 - преобразование из дв. в десятичную
+# c3 - преобразование из двоичной в десятичную
 # c4 - преобразование из шестн. в десятичную
+
 # --- Input Обработка --- #
 def ans(UsrIn:str,formatted:bool):
     if formatted:
@@ -152,6 +153,7 @@ def ans(UsrIn:str,formatted:bool):
     if UsrIn[:2] == "0x":
         return "c4"
     return False
+# --- Обучение (выкл.) --- #
 # x=[];y=[]
 # for index,data in Phrases.items():
 #     for words in data["words"]:
